@@ -166,7 +166,7 @@ Enable the new DNS HOST A entry, re-connect nello to the local MQTT broker.
 Wait ~500ms
 
 **Send mqtt message #2**  
-/nello_one/{your deviceid #2}/door/**""\n**
+/nello_one/{your deviceid #2}/door/**""\n** (can be even another valid door message)
 
 The combination of both messages, in the right order with the right delay-time in between, will force nello to bypass any security verifications and leads to the wished result: **the door lock gets unlocked**. 
 
@@ -236,3 +236,41 @@ private static string nelloDeviceId = "INSERT_YOUR_DEVICE_ID_2_HERE";
   
 Cheers  
 (Lars Feicho)
+
+
+## Update 2 - Ring bell notifications  
+It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
+Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work anylonger, because nello is in its correct system state.  
+
+### The replay attack  
+Capture at least one message from each of the following topics: 
+
+```
+/nello_one/{second deviceid}/test/
+/nello_one/{second deviceid}/BE_ACK/
+```
+
+Wait until nello tries to initiate the connection process by sending a message to the "map" topic.  
+
+Send message to the broker:  
+```
+/nello_one/{second deviceid}/test/{captured_test_message}
+```
+Wait for nello's response on:  
+```
+/nello_one/{second deviceid}/n_online/{some_message}
+```
+Send message to the broker:  
+```
+/nello_one/{second deviceid}/BE_ACK/{some_message}
+```  
+
+In my test setup, nello is now connected properly.  
+Try a test ring.  
+Nello should reply with:  
+
+![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/NELLO_RING_1.png)  
+
+Voilà.  
+
+
