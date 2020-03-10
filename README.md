@@ -242,7 +242,8 @@ Cheers
 It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
 
 ### The replay attack  
-Capture at least one message from each of the following topics: 
+Capture at least one message from each of the following topics:   
+Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work anylonger, because nello is in its correct system state.  
 
 ```
 /nello_one/{second deviceid}/test/
