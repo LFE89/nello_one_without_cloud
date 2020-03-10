@@ -8,11 +8,6 @@
  See the GNU General Public License for more details.  
  For full license text, see [http://www.gnu.org/licenses](http://www.gnu.org/licenses).
 
-## Please see UPDATE 3 (below)  
-
-Update 3 will demonstrate how to fully control a nello device (open door & get notifications).  
-Article: Coming soon  
-
 ## The Story
 
 Usually nello devices (formerly distributed through [nello.io](https://nello.io), now fully acquired by [sclak.com](https://sclak.com))  communicate directly with a cloud based MQTT broker - hosted by the vendor, that can control the devices.  
