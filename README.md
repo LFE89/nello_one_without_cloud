@@ -23,7 +23,7 @@ The entire solution was only tested with a nello device, connected to a bticino 
 
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/CLOUD_01.png)
 
-As soon as the nello device is being resetted and connects back to a wifi network, nello tries to reach the MQTT broker "live-mqtt.nello.io:1883".
+As soon as a nello device connects back to a wifi network, nello tries to reach the MQTT broker "live-mqtt.nello.io:1883".
 
 It connects to the MQTT broker by using its internal device id (used as a "mqtt client id") only.  
 No username / password nor certificate authentication is in place or needed.
@@ -52,7 +52,7 @@ The first one is being used to connect to the MQTT broker (as a client id):
 The second one is being used as a MQTT topic identifier for a specific device:   
 **Second id**: format X##### (6 digits)
 
-After the subscription process is done, the device and the cloud system exchange different kind of base64 encoded messages.  
+After the subscription process is done, the device and the cloud system exchange different kind of base64 encoded messages with QoS 1.  
 
 **1. Topic: map**  
 Nello device -> Nello Backend (MQTT Broker)  
@@ -126,7 +126,7 @@ The **replay attack** didn't work.
 Nello validates (almost ;-)) each payload, and probably checks for a matching timestamp within the encrypted message.  
 
 My **crypto analysis** didn't work. 
-Since nello is probably using a AES256 encryption, I had no look to find a proper key nor to find a proper IV.  
+Since nello is probably using a AES256 encryption, I had no luck to find a proper key nor to find a proper IV.  
 I've to admit, that I first thought something like: the first message sent from nello to the "map" topic might help, because it is always the same, and might contain the key. Maybe it is true, but it is probably encrypted as well and did not help me.  
 
 The **security bypass approach** worked.  
@@ -143,14 +143,14 @@ Bingo.
 
 As stated, the public cloud MQTT broker of nello is only protected by checking for a valid device identifier (#1).    
 By connecting to the broker in the name of a nello device, it is possible to copy any messages which are needed (**don't do so**).  
-The better solution is to use wireshark, and just sniff all the traffic. It only affects your network, and you can decide what you do there.
+The better solution is to use wireshark and sniff all the traffic. It only affects your network and you can decide what you do there.
 Simply use a network tap between nello and the outgoing modem (nello -> switch (mirror traffic port x to y) -> PC (listen on eth0 passive connected to port y, only for incoming traffic)).
 
 The nello device needs to be connected to the real public live-mqtt.nello.io MQTTT broker, during this phase.  
 Disable the new DNS HOST A entry, re-connect nello.  
 
 Nello will immediately start over with the starting sequences from above, when it is re-connected.  
-At some point, the nello backend will send an encrpyted message to the "test" topic (if not, a reset is neccessary).  
+At some point, the nello backend will send an encrpyted message to the "test" topic.  
 Capture it!  
 Even the fact, that the "test topic" message will change over time - as mentioned above - doesn't matter.  
 Only one single valid test message is needed.  
@@ -170,7 +170,7 @@ Wait ~500ms
 
 The combination of both messages, in the right order with the right delay-time in between, will force nello to bypass any security verifications and leads to the wished result: **the door lock gets unlocked**. 
 
-It works, because nello frequently sends a message to the "map" topic, indicating it is waiting for a connection and is ready to start the test process (the chance!).  
+It works, because nello frequently sends a message to the "map" topic, indicating it is waiting for a connection and is ready to start the connection establishment process (our chance!).  
 To send the "unlock" security bypass sequence only once, will not work everytime.  
 Since nello first responds, after it sent the "map" message.  
 To overcome this problem, it is possible to continue sending the sequence, until nello responses with "n_ack" (or until an cancellation limit is reached, for other reasons..).
