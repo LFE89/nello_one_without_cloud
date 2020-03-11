@@ -241,7 +241,7 @@ Cheers
 
 ## Update 2 - Ring bell notifications  
 It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
-Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work anylonger, because nello is in its correct system state.  
+Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work any longer, because nello is in its correct system state.  
 
 ### The replay attack  
 Capture at least one message from each of the following topics:   
@@ -273,5 +273,7 @@ Nello should reply with:
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/NELLO_RING_1.png)  
 
 Voilà.  
+
+Please note: nello sends every five minutes a message to the "n_online" topic, waiting to be acknowlegded with a message to the "BE_ACK" topic. If there will be no response from the backend, nello will start over with the connection process and does not listen for ring bell signals any longer.
 
 
