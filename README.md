@@ -173,7 +173,8 @@ The combination of both messages, in the right order with the right delay-time i
 It works, because nello frequently sends a message to the "map" topic, indicating it is waiting for a connection and is ready to start the connection establishment process (our chance!).  
 To send the "unlock" security bypass sequence only once, will not work everytime.  
 Since nello first responds, after it sent the "map" message.  
-To overcome this problem, it is possible to continue sending the sequence, until nello responses with "n_ack" (or until an cancellation limit is reached, for other reasons..).
+To overcome this problem, it would be the best solution to wait until nello sent a "map" message (<2 s).
+For simplification and other test reasons, I just continue sending the sequence multiple times, until nello responses with an "n_ack" (or until a cancellation limit is reached, for other reasons..).
 
 ```
  // We try a max send sequence of 15 times
