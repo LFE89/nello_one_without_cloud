@@ -25,7 +25,7 @@ See [Update 2] for the full cloud-less backend solution.
 
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/CLOUD_01.png)
 
-As soon as a nello device connects back to a wifi network, nello tries to reach the MQTT broker "live-mqtt.nello.io:1883".
+As soon as a nello device connects back to a wifi network, it tries to connect to the MQTT broker "live-mqtt.nello.io:1883".
 
 It connects to the MQTT broker by using its internal device id (used as a "mqtt client id") only.  
 No username / password nor certificate authentication is in place or needed.
@@ -46,7 +46,7 @@ Nello will automatically subscribe to the following topics:
 /nello_one/{second deviceid}/BEn/
 ```
 
-The nello backend uses two different nello device identifier for a single device.  
+The nello backend uses two different nello device identifiers.  
 
 The first one is being used to connect to the MQTT broker (as a client id):  
 **First id**: format Pt######## (10 digits)
@@ -54,7 +54,7 @@ The first one is being used to connect to the MQTT broker (as a client id):
 The second one is being used as a MQTT topic identifier for a specific device:   
 **Second id**: format X##### (6 digits)
 
-After the subscription process is done, the device and the cloud system exchange different kind of base64 encoded messages with QoS 1.  
+After the subscription process is done, nello and the cloud system exchange different kind of base64 encoded messages with QoS 1.  
 
 **1. Topic: map**  
 Nello device -> Nello Backend (MQTT Broker)  
@@ -174,7 +174,7 @@ The combination of both messages, in the right order with the right delay-time i
 
 It works, because nello frequently sends a message to the "map" topic, indicating it is waiting for a connection and is ready to start the connection establishment process (our chance!).  
 To send the "unlock" security bypass sequence only once, will not work everytime.  
-Since nello first responds, after it sent the "map" message.  
+Because nello first responds, after it sent the "map" message.  
 To overcome this problem, it would be the best solution to wait until nello sent a "map" message (<2 s).
 For simplification and other test reasons, I just continue sending the sequence multiple times, until nello responses with an "n_ack" (or until a cancellation limit is reached, for other reasons..).
 
@@ -294,16 +294,16 @@ Simply by combining solution 1 and 2.
 It'll use the replay attack to force nello to connect properly to the local backend.  
 
 **Info:**  
-The more "BE_ACK" messages of one entire cyclic you have recorded, the less reconnections are necessary.  
-Unfortunately the best amount I recorded, were three "n_online" -> "BE_ACK" messages **in a row**. Then my nello device did a reconnect automatically and started over again.  
+The more "BE_ACK" messages of one entire connection period you have recorded, the less reconnections are necessary.  
+Unfortunately the best amount I recorded, were three "n_online" -> "BE_ACK" messages **in a row**. Then my nello device did automatically a reconnect and started over again.  
 
-Having said that, my nello device will reconnect ~90 times in 24h. That is true for both solutions, the public cloud backend and the offline backend (because I only was able to record three "BE_ACK" messages).  
-I think that's a strange behavior. If someone can confirm this behavior with her/his nello as well, that would be great and could be a hint of a misconfigured public cloud backend (e.g. tcp connections / backend ignores keep alive packets).  
-Otherwise it could be possible that some of my network devices will terminate the connection as well... Don't know yet.  
+Having said that, my nello device will reconnect ~90 times in 24h. That is true for both solutions, the public cloud backend and the cloud-less backend (because I only was able to record three "BE_ACK" messages).  
+I think that's a strange behavior. If someone can confirm this behavior with her/his nello as well, that would be great and could be a hint of a misconfigured public cloud backend (e.g. tcp connection / backend ignores keep alive packets).  
+Otherwise, it could also be possible that some of my network devices will terminate the connection as well... Don't know yet.  
 
-**The most important point to keep in mind for the full offline backend solution:**  
-Since it is only possible to open the door during nello's connection etstablishment startup phase - remember the security bypass approach - we've to terminate its MQTT session first to force nello to reconnect. That will lead to the mentioned ~10s delay.  
+**The most important point to keep in mind about the full cloud-less backend solution:**  
+Since it is only possible to open the door during nello's connection etstablishment startup phase - remember the security bypass approach - we've to terminate its MQTT session first to force nello to reconnect. That will lead to a longer delay.  
 
-Dirty solution. But'll work.  
+Not the best solution, but'll work.  
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/BACKEND_SOL_1.JPG)  
 
