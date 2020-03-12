@@ -239,7 +239,7 @@ Cheers
 (Lars Feicho)
 
 
-## Update 2 - Ring bell notifications  
+## Update 1 - Ring bell notifications  
 It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
 Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work any longer, because nello is in its correct system state.  
 
@@ -276,4 +276,32 @@ Voilà.
 
 Please note: nello sends every five minutes a message to the "n_online" topic, waiting to be acknowlegded with a message to the "BE_ACK" topic. If there will be no response from the backend, nello will start over with the connection process and does not listen for ring bell signals any longer.
 
+## Update 2 - Full backend solution (receive notifications and unlock door)
+
+#### Summary of the three possible solutions:
+
+| Solution | Command support | Notification support | Time |
+| --- | --- | --- | --- |
+| 1. Only unlock command | Y | N | < 2 seconds |
+| 2. Only bell ring notification | N | Y | < 2 seconds |
+| 3. Full offline backend | Y | Y | Notification: <br/><2 sec.<br/>Command: <br/>< 13 sec. |  
+
+#### How does the full offline backend will work?
+
+Simply by combining solution 1 and 2.  
+It'll use the replay attack to force nello to connect properly to the local backend.  
+
+**Info:**  
+The more "BE_ACK" messages of one entire cyclic you have recorded, the less reconnections are necessary.  
+Unfortunately the best amount I recorded, were three "n_online" -> "BE_ACK" messages **in a row**. Then my nello device did a reconnect automatically and started over again.  
+
+Having said that, my nello device will reconnect ~90 times in 24h. That is true for both solutions, the public cloud backend and the offline backend (because I only was able to record three "BE_ACK" messages).  
+I think that's a strange behavior. If someone can confirm this behavior with her/his nello as well, that would be great and could be a hint of a misconfigured public cloud backend (e.g. tcp connections / backend ignores keep alive packets).  
+Otherwise it could be possible that some of my network devices will terminate the connection as well... Don't know yet.  
+
+**The most important point to keep in mind for the full offline backend solution:**  
+Since it is only possible to open the door during nello's connection etstablishment startup phase - remember the security bypass approach - we've to terminate its MQTT session first to force nello to reconnect. That will lead to the mentioned ~10s delay.  
+
+Dirty solution. But'll work.  
+![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/BACKEND_SOL_1.JPG)  
 
