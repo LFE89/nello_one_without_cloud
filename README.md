@@ -19,7 +19,7 @@ To achieve that goal, the PoC will make use of a security bypass sequence, to av
 It is **not** neccessary to modify the nello firmware.  
 The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.  
 
-See [Update 2] for the full offline backend information.  
+See [Update 2] for the full cloud-less backend solution.  
 
 ### Understanding: nello.io public cloud MQTT broker access
 
@@ -286,9 +286,9 @@ Please note: nello sends every five minutes a message to the "n_online" topic, w
 | --- | --- | --- | --- |
 | 1. Only unlock command | Y | N | < 2 seconds |
 | 2. Only bell ring notification | N | Y | < 2 seconds |
-| 3. Full offline backend | Y | Y | Notification: <br/><2 sec.<br/>Command: <br/>< 13 sec. |  
+| 3. Full cloud-less nello backend | Y | Y | Notification: <br/><2 sec.<br/>Command: <br/>< 13 sec. |  
 
-#### How does the full offline backend will work?
+#### How does the full cloud-less backend will work?
 
 Simply by combining solution 1 and 2.  
 It'll use the replay attack to force nello to connect properly to the local backend.  
