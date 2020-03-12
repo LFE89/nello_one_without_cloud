@@ -1,4 +1,4 @@
-# NELLO ONE - Remove cloud constraint (security bypass sequence)
+# NELLO ONE - Remove cloud constraint (incl. security bypass sequence)
 
 ## License
 
@@ -19,7 +19,7 @@ To achieve that goal, the PoC will make use of a security bypass sequence, to av
 It is **not** neccessary to modify the nello firmware.  
 The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.  
 
-See [Update 2] for the full cloud-less backend solution.  
+**See [Update 2] for the full cloud-less backend solution.**  
 
 ### Understanding: nello.io public cloud MQTT broker access
 
@@ -100,8 +100,8 @@ Let's go on.
 Since a modification of the firmware isn't wanted, it is still neccessary to redirect the traffic from a nello device from "live-mqtt.nello.io" to a local MQTT broker.  
 Don't do anything DNS spoofing (local of course..) related, because there are other elegant solutions to this problem:  
 
-Setup a dedicated local DNS server on a raspberry pi (using Bind9).  
-Create a new HOST A record, to "redirect" all local DNS requests for "live-mqtt.nello.io" to a local MQTT broker (192.168.8.3).  
+Setup a dedicated local DNS server on a raspberry pi (using Bind9 or just dnsmasq (simple)).  
+Create either a new HOST A record or create a forwarding entry to "redirect" all local DNS requests of "live-mqtt.nello.io" to a local MQTT broker (192.168.8.3).  
 
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/PING_01.png)
 
