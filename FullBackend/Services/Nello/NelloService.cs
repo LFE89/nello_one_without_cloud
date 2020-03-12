@@ -195,7 +195,8 @@ namespace NelloBackend.Services.Nello
                         await Task.Delay(550);
                         counter += 1;
                     }
-
+                    
+                    _mapMessageReceived = false;
                     _isTryingToUnlockDoor = false;
                 });
             }
