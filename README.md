@@ -17,7 +17,9 @@ To achieve that goal, the PoC will make use of a security bypass sequence, to av
 
 **Preamble:**
 It is **not** neccessary to modify the nello firmware.  
-The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.
+The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.  
+
+See [Update 2] for the full offline backend information.  
 
 ### Understanding: nello.io public cloud MQTT broker access
 
