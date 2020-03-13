@@ -166,7 +166,7 @@ Nello Backend (MQTT Broker) -> Nello device
 
 Afterwards nello one is in its correct system state and is waiting for commands or internal bell notification indicators.  
 Since it is even possible to setup nello from a smartphone using a 3G/4G connection, it needs to send the SSID of the wifi network to the public cloud backend, in order to match the device with an user account.  
-** Just my guess. I see no other alternative to map a device to an user account, without providing any unique information.**   
+**Just my guess. I see no other alternative to map a device to an user account, without providing any unique information.**   
 That probable also means, when there are two users with the same network SSID (name of the wifi) trying to setup a nello at the same time, there is a chance to create a false mapping. I think the likelihood is rather small and should not worry someone.  
 
 
