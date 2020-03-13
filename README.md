@@ -1,5 +1,4 @@
 # NELLO ONE - Remove cloud constraint (incl. security bypass sequence)
-
 ## License
 
  This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -8,23 +7,40 @@
  See the GNU General Public License for more details.  
  For full license text, see [http://www.gnu.org/licenses](http://www.gnu.org/licenses).
 
+## Table of Contents
 
+-   [1. The Story](#1-the-story)
+-   [2. Preamble](#2-preamble)
+-   [3. Understanding](#3-understanding)
+    -   [3.1. Understanding 1: nello public cloud MQTT broker access](#31-understanding-1-nello-one-public-cloud-mqtt-broker-access)
+    -   [3.2. Understanding 2: communication interaction between nello and cloud backend](#32-understanding-2-communication-interaction-between-nello-and-the-cloud-backend)
+    -   [3.3. Uncertainties: wifi ssid transmission](#33-uncertainties-wifi-ssid-transmission)
+-   [4. The interesting parts](#4-the-interesting-parts)
+    -   [4.1. Re-route nello to local MQTT broker](#41-re-route-nello-to-local-mqtt-broker)
+    -   [4.2. Control nello (the analyis)](#42-control-nello-the-analysis)
+    -   [4.3. Control nello (the attack)](#43-control-nello-the-attack)
+    -   [4.4. Security concerns (my opionion)](#44-security-concerns-my-opinion)
+    -   [4.5. Further remark](#45-further-remark)
+-   [5. Update 1: Get ring bell notifications](#5-update-1-get-ring-bell-notifications)
+    -   [5.1. The replay attack](#51-the-replay-attack)
+-   [6. Update 2: Full non-cloud based backend solution](#6-update-2-full-non-cloud-based-backend-solution)
 
-
-## The Story
+## 1. The Story
 
 Usually nello devices (formerly distributed through [nello.io](https://nello.io), now fully acquired by [sclak.com](https://sclak.com))  communicate directly with a cloud based MQTT broker - hosted by the vendor, that can control the devices.  
 With help of the vendors app or their official APIs - not available at the moment - an authenticated user can e.g. remotely open his/her locks.  
 This article describes the process, on how to control a nello device, without having the need to use the vendors cloud system.
 To achieve that goal, the PoC will make use of a security bypass sequence, to avoid needing any insight knowhow about the encryption and decryption cipher keys.  
 
-**Preamble:**
+## 2. Preamble
 It is **not** neccessary to modify the nello firmware.  
-The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.  
+The entire solution was only tested with a nello device, connected to a bticino 100 Audio system (2 wired bus).  
 
-**See [Update 2](#update-2-full-backend-solution) for the full cloud-less backend solution.**  
+**See [Update 2](#6-update-2-full-non-cloud-based-backend-solution) for the full cloud-less backend solution.**  
 
-### Understanding: nello.io public cloud MQTT broker access
+## 3. Understanding  
+
+### 3.1. Understanding 1: nello one public cloud MQTT broker access  
 
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/CLOUD_01.png)
 
@@ -36,7 +52,7 @@ No username / password nor certificate authentication is in place or needed.
 Having said that, everyone with a valid device id (wireshark might help) can connect to the public cloud nello MQTT broker.  
 Once connected, it is possible to get information about other active nello devices - such as device identifier, encrypted messages, etc.
 
-### Understanding: cloud <-> nello interaction (current situation)
+### 3.2. Understanding 2: communication interaction between nello and the cloud backend  
 
 Nello will automatically subscribe to the following topics:  
 
@@ -58,6 +74,7 @@ The second one is being used as a MQTT topic identifier for a specific device:
 **Second id**: format X##### (6 digits)
 
 After the subscription process is done, nello and the cloud system exchange different kind of base64 encoded messages with QoS 1.  
+Assumption: nello was already connected to the backend. (see [3.3. Uncertainties: wifi ssid transmission](#33-uncertainties-wifi-ssid-transmission))  
 
 **1. Topic: map**  
 Nello device -> Nello Backend (MQTT Broker)  
@@ -88,8 +105,73 @@ Nello device -> Nello Backend (MQTT Broker)
 ```/nello_one/{second deviceid}/n_ACK/ZE...=\n```  
 This message varies in its content. Only the length (32 byte, exluding ''\n') seems to be always the same.  
 
+### 3.3. Uncertainties: wifi ssid transmission  
+During the very first backend connection establishment process (after a reset has been done), the protocol sequence is slightly different:  
 
-### The interesting part (I): Re-route nello to a local MQTT broker
+**1. Topic: map**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/map/JA...oMf0=\n```  
+
+**2. Topic: test**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/test/Iu....O...\n```  
+
+**3. Topic: BEn**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BEn/81...=\n```  
+
+**4. Topic: n_to_BE**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/n_to_BE/Lo...oM1=\n```  
+
+**5. Topic: BEn**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BEn/75...1=\n```  
+
+**6. Topic: n_to_BE**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/n_to_BE/aD...oMg1=\n```  
+
+**7. Topic: BEn**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BEn/94...dK=\n```  
+
+**8. Topic: BEn**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BEn/MP...=\n```  
+
+**9. Topic: N_ACK**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/N_ACK/Oj...o1=\n```
+
+**10. Topic: n_to_BE**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/n_to_BE/kL..daA=\n```
+
+**11. Topic: BEn**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BEn/fA...=\n```  
+
+**12. Topic: N_ACK**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/N_ACK/bE...dA1=\n```
+
+**13. Topic: n_online**  
+Nello device -> Nello Backend (MQTT Broker)  
+```/nello_one/{second deviceid}/n_online/fe...=\n```  
+
+**14. Topic: BE_ACK**  
+Nello Backend (MQTT Broker) -> Nello device  
+```/nello_one/{second deviceid}/BE_ACK/Qa...=\n```  
+
+Afterwards nello one is in its correct system state and is waiting for commands or internal bell notification indicators.  
+Since it is even possible to setup nello from a smartphone using a 3G/4G connection, it needs to send the SSID of the wifi network to the public cloud backend, in order to match the device with an user account.  
+** Just my guess. I see no other alternative to map a device to an user account, without providing any unique information.**   
+That probable also means, when there are two users with the same network SSID (name of the wifi) trying to setup a nello at the same time, there is a chance to create a false mapping. I think the likelihood is rather small and should not worry someone.  
+
+
+## 4. The interesting parts  
+### 4.1. Re-route nello to local MQTT broker  
 
 The communication flow between the backend and the device is known.  
 
@@ -119,7 +201,7 @@ After nello restarts (disconnect power, connect power again -> to force nello to
 First achievement!  
 Nello is connected to the local MQTT broker.  
 
-### The interesting part (II): control nello (analysis)
+### 4.2. control nello (the analysis)  
 
 **My thoughts and approaches to go on**
 
@@ -139,7 +221,7 @@ I've found a message sequence (including payload), which is able to bypass the "
 
 Bingo. 
 
-### The interesting part (III): control nello (the attack)  
+### 4.3. control nello (the attack)  
 
 1.  Intercept one message sent from the backend to the "test" topic of the specific nello device  
 2.  Send a special message sequence to the local mqtt broker  
@@ -217,38 +299,24 @@ The full PoC code is added.
 Voilà.  
 First try, "n_ACK" from nello has been received, and the door is unlocked.
 
-### Security concerns (my opinion)  
-
+### 4.4. Security concerns (my opinion)  
 The security bypass sequence proof of concept also shows, that people with write access to the public cloud MQTT Broker "test" and "door" topics, easily could force a nello device to unlock a door, without further user authentication - except the initial MQTT Broker authentication. In my opinion, it is a low-med security concern, because probably a few sclak.com and nello.io employees or partner do have access to the specific MQTT broker with write access. So, that should be changed in the firmware, to decrease the probability of an unintentional misuse of any locks.  
 
 
-### Further remark  
+### 4.5. Further remark  
 
 Since, it is just a "hack", the device itself never fully comes to its expected connection state, therefore no "bell ring" signals will be send to a local MQTT broker by nello - yet ;-).  
 
-
-### Code changes to make the PoC work with your nello (if you've setup the infrastructure...)
-
-**Class NelloMqttService.cs**
-```
-private const string DEVICE_ID = "INSERT YOUR DEVICE ID 2 HERE";
-```
-
-**Class Program.cs**
-```
-private static string testTopicMagicPayload = "INSERT_YOUR_RECORDED_TEST_MESSAGE_HERE\n";
-private static string nelloDeviceId = "INSERT_YOUR_DEVICE_ID_2_HERE";
-```
   
 Cheers  
 (Lars Feicho)
 
 
-## Update 1: Ring bell notifications  
+## 5. Update 1: Get ring bell notifications    
 It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
 Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work any longer, because nello is in its correct system state.  
 
-### The replay attack  
+### 5.1. The replay attack  
 Capture at least one message from each of the following topics:   
 
 ```
@@ -281,7 +349,7 @@ Voilà.
 
 Please note: nello sends every five minutes a message to the "n_online" topic, waiting to be acknowlegded with a message to the "BE_ACK" topic. If there will be no response from the backend, nello will start over with the connection process and does not listen for ring bell signals any longer.
 
-## Update 2: Full backend solution
+## 6. Update 2: Full non-cloud based backend solution  
 
 #### Summary of the three possible solutions:
 
@@ -309,4 +377,3 @@ Since it is only possible to open the door during nello's connection etstablishm
 
 Not the best solution, but'll work.  
 ![](https://github.com/LFE89/nello_one_without_cloud/blob/master/images/BACKEND_SOL_1.JPG)  
-
