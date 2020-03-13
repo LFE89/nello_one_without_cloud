@@ -8,6 +8,9 @@
  See the GNU General Public License for more details.  
  For full license text, see [http://www.gnu.org/licenses](http://www.gnu.org/licenses).
 
+
+
+
 ## The Story
 
 Usually nello devices (formerly distributed through [nello.io](https://nello.io), now fully acquired by [sclak.com](https://sclak.com))  communicate directly with a cloud based MQTT broker - hosted by the vendor, that can control the devices.  
@@ -19,7 +22,7 @@ To achieve that goal, the PoC will make use of a security bypass sequence, to av
 It is **not** neccessary to modify the nello firmware.  
 The entire solution was only tested with a nello device, connected to a bticino 100 Audio (2 wire bus) system.  
 
-**See [Update 2] for the full cloud-less backend solution.**  
+**See [Update 2](#update-2-full-backend-solution) for the full cloud-less backend solution.**  
 
 ### Understanding: nello.io public cloud MQTT broker access
 
@@ -241,7 +244,7 @@ Cheers
 (Lars Feicho)
 
 
-## Update 1 - Ring bell notifications  
+## Update 1: Ring bell notifications  
 It is possibe to get MQTT messages from nello, as soon as someone rings the bell, by doing a replay attack for this purpose.  
 Tradeoff: You'll get notifications, but the door unlock bypass sequence doesn't work any longer, because nello is in its correct system state.  
 
@@ -278,7 +281,7 @@ Voilà.
 
 Please note: nello sends every five minutes a message to the "n_online" topic, waiting to be acknowlegded with a message to the "BE_ACK" topic. If there will be no response from the backend, nello will start over with the connection process and does not listen for ring bell signals any longer.
 
-## Update 2 - Full backend solution (receive notifications and unlock door)
+## Update 2: Full backend solution
 
 #### Summary of the three possible solutions:
 
