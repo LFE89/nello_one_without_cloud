@@ -164,6 +164,7 @@ Nello device -> Nello Backend (MQTT Broker)
 Nello Backend (MQTT Broker) -> Nello device  
 ```/nello_one/{second deviceid}/BE_ACK/Qa...=\n```  
 
+During this phase, nello one will probable transfer the wifi ssid and the "location id" to the backend.  
 Afterwards nello one is in its correct system state and is waiting for commands or internal bell notification indicators.  
 
 ## 4. The interesting parts  
