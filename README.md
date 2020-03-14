@@ -14,7 +14,7 @@
 -   [3. Understanding](#3-understanding)
     -   [3.1. Understanding 1: nello public cloud MQTT broker access](#31-understanding-1-nello-one-public-cloud-mqtt-broker-access)
     -   [3.2. Understanding 2: communication interaction between nello and cloud backend](#32-understanding-2-communication-interaction-between-nello-and-the-cloud-backend)
-    -   [3.3. Understanding 3: protocol sequence after reset](#33-protocol-sequence-after-reset)
+    -   [3.3. Understanding 3: protocol sequence after reset](#33-understanding-3-protocol-sequence-after-reset)
 -   [4. The interesting parts](#4-the-interesting-parts)
     -   [4.1. Re-route nello to local MQTT broker](#41-re-route-nello-to-local-mqtt-broker)
     -   [4.2. Control nello (the analyis)](#42-control-nello-the-analysis)
