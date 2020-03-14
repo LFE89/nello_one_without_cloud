@@ -14,7 +14,7 @@
 -   [3. Understanding](#3-understanding)
     -   [3.1. Understanding 1: nello public cloud MQTT broker access](#31-understanding-1-nello-one-public-cloud-mqtt-broker-access)
     -   [3.2. Understanding 2: communication interaction between nello and cloud backend](#32-understanding-2-communication-interaction-between-nello-and-the-cloud-backend)
-    -   [3.3. Uncertainties: wifi ssid transmission](#33-uncertainties-wifi-ssid-transmission)
+    -   [3.3. Understanding 3: protocol sequence after reset](#33-protocol-sequence-after-reset)
 -   [4. The interesting parts](#4-the-interesting-parts)
     -   [4.1. Re-route nello to local MQTT broker](#41-re-route-nello-to-local-mqtt-broker)
     -   [4.2. Control nello (the analyis)](#42-control-nello-the-analysis)
@@ -105,7 +105,7 @@ Nello device -> Nello Backend (MQTT Broker)
 ```/nello_one/{second deviceid}/n_ACK/ZE...=\n```  
 This message varies in its content. Only the length (32 byte, exluding ''\n') seems to be always the same.  
 
-### 3.3. Uncertainties: wifi ssid transmission  
+### 3.3. Understanding 3: protocol sequence after reset  
 During the very first backend connection establishment process (after a reset has been done), the protocol sequence is slightly different:  
 
 **1. Topic: map**  
